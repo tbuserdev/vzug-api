@@ -24,7 +24,7 @@ html {
 }
 
 body {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   background: linear-gradient(135deg, #1e272e 0%, #0f1419 100%);
   color: var(--text-primary);
   min-height: 100vh;
@@ -36,10 +36,8 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 20px;
-  padding:
-    max(20px, env(safe-area-inset-top))
-    max(20px, env(safe-area-inset-right))
-    max(20px, env(safe-area-inset-bottom))
+  padding: max(20px, env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom))
     max(20px, env(safe-area-inset-left));
 }
 
@@ -49,7 +47,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
+  background-image:
     linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: 50px 50px;
@@ -62,7 +60,7 @@ body {
   max-width: 95%;
   background: var(--panel-bg);
   border: 3px solid var(--border-color);
-  box-shadow: 
+  box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.1),
     0 20px 40px var(--shadow-dark),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -109,12 +107,17 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .brand-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
   font-size: 24px;
   letter-spacing: 2px;
@@ -163,7 +166,7 @@ body {
 }
 
 .state-display::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -174,8 +177,13 @@ body {
 }
 
 @keyframes stateGlow {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .state-header {
@@ -222,8 +230,15 @@ body {
 }
 
 @keyframes indicatorPulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.8; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
 }
 
 .indicator-text {
@@ -257,11 +272,11 @@ body {
   font-size: 13px;
   color: var(--text-primary);
   font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
 }
 
 .section-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 500;
   font-size: 14px;
   letter-spacing: 3px;
@@ -311,7 +326,7 @@ body {
   border: 2px solid var(--border-color);
   color: var(--text-primary);
   padding: 15px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-weight: 600;
   font-size: 12px;
   letter-spacing: 1px;
@@ -330,13 +345,18 @@ body {
 }
 
 .control-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
   transition: left 0.5s ease;
 }
 
@@ -391,7 +411,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 20px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
 }
 
 .status-label {
@@ -449,7 +469,7 @@ body {
   body {
     display: block;
   }
-  
+
   .control-panel {
     width: 100%;
     max-width: none;
@@ -459,79 +479,79 @@ body {
     display: flex;
     flex-direction: column;
   }
-  
+
   .panel-header {
     padding: 15px 20px;
     flex-direction: column;
     gap: 15px;
     text-align: center;
   }
-  
+
   .brand-block {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .brand-title {
     font-size: 20px;
     letter-spacing: 1px;
   }
-  
+
   .control-section {
     padding: 20px;
     flex: 1;
   }
-  
+
   .control-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .control-group {
     padding: 15px;
   }
-  
+
   .button-pair {
     gap: 15px;
   }
-  
+
   .control-btn {
     padding: 20px 15px;
     font-size: 14px;
     min-height: 50px;
   }
-  
+
   .btn-icon {
     font-size: 22px;
   }
-  
+
   .btn-text {
     font-size: 12px;
   }
-  
+
   .state-display {
     padding: 20px;
     margin-bottom: 20px;
   }
-  
+
   .state-details {
     grid-template-columns: 1fr;
     gap: 10px;
   }
-  
+
   .status-display {
     padding: 15px;
   }
-  
+
   .panel-footer {
     padding: 15px 20px;
   }
-  
+
   .footer-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
-  
+
   .footer-item {
     text-align: center;
   }
@@ -541,28 +561,28 @@ body {
   .panel-header {
     padding: 10px 15px;
   }
-  
+
   .control-section {
     padding: 15px;
   }
-  
+
   .state-display {
     padding: 15px;
   }
-  
+
   .control-group {
     padding: 12px;
   }
-  
+
   .control-btn {
     padding: 18px 12px;
     font-size: 13px;
   }
-  
+
   .brand-title {
     font-size: 18px;
   }
-  
+
   .model-code {
     font-size: 10px;
   }

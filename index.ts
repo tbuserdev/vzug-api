@@ -4,7 +4,10 @@ import asciiArt from "./logo";
 import fs from "fs/promises";
 import path from "path";
 
-const BASE_URL = (process.env.BASE_URL ?? "http://127.0.0.1").replace(/\/$/, "");
+const BASE_URL = (process.env.BASE_URL ?? "http://127.0.0.1").replace(
+  /\/$/,
+  ""
+);
 const PORT = Number(process.env.PORT ?? "3000");
 const ALLOW_INSECURE_TLS = process.env.ALLOW_INSECURE_TLS === "true";
 
@@ -151,7 +154,7 @@ const server = http.createServer(async (req, res) => {
         });
         res.end(data);
         return;
-      } catch (err) {
+      } catch {
         // If root and index.html missing, show clear error
         if (url.pathname === "/") {
           res.writeHead(500, { "Content-Type": "text/plain" });

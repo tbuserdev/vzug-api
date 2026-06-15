@@ -1,9 +1,7 @@
 services:
   vzug-api:
     container_name: vzug-api
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${IMAGE:-ghcr.io/tbuserdev/vzug-api:latest}
     environment:
       - NODE_ENV=production
       - BASE_URL=${BASE_URL:-http://device.local}

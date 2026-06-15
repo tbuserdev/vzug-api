@@ -1,14 +1,12 @@
 FROM oven/bun:1.3.5-alpine
 
 WORKDIR /app
+ENV NODE_ENV=production
 
-# Install dependencies
 COPY package.json bun.lock ./
-RUN bun install
+RUN bun install --frozen-lockfile --production
 
-# Copy everything (including public/ and index.ts)
 COPY . .
 
-# Expose and Run directly from TS (Bun's strength)
 EXPOSE 3000
-CMD ["bun", "run", "index.ts"]
+CMD ["bun", "start"]

@@ -20,6 +20,7 @@ Environment variables:
 - `ALLOW_INSECURE_TLS`: Set to `true` only if you need to talk to a self-signed HTTPS endpoint
 
 ## Features
+
 - **Scheduled Tasks**: Automatically show the clock at 22:00 and hide it at 06:00 daily.
 - **Manual Control**: Use the HTTP API to toggle, show, or hide the clock manually.
 - **Retry Logic**: Handles temporary server unavailability with retries.
@@ -40,10 +41,42 @@ To run the project:
 bun start
 ```
 
-To run with Docker Compose:
+To build and run a local Docker image:
 
 ```bash
-docker compose up --build
+bun run docker:build
+IMAGE=vzug-api docker compose up
+```
+
+## Quality Checks
+
+Run the same checks used by CI:
+
+```bash
+bun run check
+```
+
+Individual commands are also available:
+
+- `bun run format:check`
+- `bun run lint`
+- `bun run typecheck`
+- `bun run build`
+
+## Docker Image
+
+GitHub Actions builds the Docker image on every pull request and publishes a multi-architecture image to GitHub Container Registry on pushes to `main`:
+
+```text
+ghcr.io/tbuserdev/vzug-api:latest
+```
+
+For home deployment, create a `.env` file and start the published image:
+
+```bash
+cp .env.example .env
+docker compose pull
+docker compose up -d
 ```
 
 ## HTTP API Endpoints
@@ -56,6 +89,7 @@ docker compose up --build
 The server runs on port `3000` by default. Set the `PORT` environment variable to use a different port.
 
 ## Notes
+
 - Ensure the V-Zug device is reachable at the configured `BASE_URL`.
 - TLS certificate verification is enabled by default. Set `ALLOW_INSECURE_TLS=true` only for local devices that require a self-signed HTTPS certificate.
 

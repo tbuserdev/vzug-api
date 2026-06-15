@@ -79,6 +79,14 @@ docker compose pull
 docker compose up -d
 ```
 
+If `docker compose pull` returns `denied`, make the GHCR package public in GitHub:
+
+1. Open the `vzug-api` package page under the repository or account packages.
+2. Open package settings.
+3. Change package visibility to public.
+
+Alternatively, keep the package private and run `docker login ghcr.io` on the home server with a token that has `read:packages` access.
+
 ## HTTP API Endpoints
 
 - **Toggle Clock**: `GET /toggle?value=true|false`

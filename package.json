@@ -1,0 +1,31 @@
+{
+  "name": "vzug",
+  "description": "Bun-based HTTP controller for a V-Zug display clock with scheduled automation and manual endpoints.",
+  "license": "MIT",
+  "author": "Tim Buser <hello@tbuser.dev>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tbuserdev/vzug-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tbuserdev/vzug-api/issues"
+  },
+  "homepage": "https://github.com/tbuserdev/vzug-api#readme",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run index.ts",
+    "dev": "bun run --watch index.ts",
+    "build": "bun build index.ts --outdir ./build --target node"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "cron": "^4.4.0"
+  }
+}

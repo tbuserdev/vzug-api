@@ -1,0 +1,14 @@
+services:
+  vzug-api:
+    container_name: vzug-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - BASE_URL=${BASE_URL:-http://device.local}
+      - PORT=${PORT:-3000}
+      - ALLOW_INSECURE_TLS=${ALLOW_INSECURE_TLS:-false}
+    restart: unless-stopped
+    ports:
+      - ${HOST_PORT:-9999}:${PORT:-3000}

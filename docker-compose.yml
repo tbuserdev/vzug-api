@@ -1,12 +1,25 @@
 services:
-  vzug-api:
-    container_name: vzug-api
+  vzug-ha:
+    container_name: vzug-ha
     image: ${IMAGE:-ghcr.io/tbuserdev/vzug-api:latest}
     environment:
-      - NODE_ENV=production
-      - BASE_URL=${BASE_URL:-http://device.local}
-      - PORT=${PORT:-3000}
-      - ALLOW_INSECURE_TLS=${ALLOW_INSECURE_TLS:-false}
+      BASE_URL: ${BASE_URL:-http://device.local}
+      PORT: ${PORT:-3000}
+      ALLOW_INSECURE_TLS: ${ALLOW_INSECURE_TLS:-false}
+      HTTP_TIMEOUT: ${HTTP_TIMEOUT:-10s}
+      RETRY_COUNT: ${RETRY_COUNT:-3}
+      RETRY_DELAY: ${RETRY_DELAY:-5s}
+      TIMEZONE: ${TIMEZONE:-Europe/Zurich}
+      SHOW_SCHEDULE: "${SHOW_SCHEDULE:-0 22 * * *}"
+      HIDE_SCHEDULE: "${HIDE_SCHEDULE:-0 6 * * *}"
+      MQTT_BROKER: ${MQTT_BROKER:-}
+      MQTT_USERNAME: ${MQTT_USERNAME:-}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-}
+      MQTT_CLIENT_ID: ${MQTT_CLIENT_ID:-vzug-ha}
+      MQTT_DISCOVERY_PREFIX: ${MQTT_DISCOVERY_PREFIX:-homeassistant}
+      MQTT_BASE_TOPIC: ${MQTT_BASE_TOPIC:-vzug/display_clock}
+      DEVICE_ID: ${DEVICE_ID:-vzug_display_clock}
+      DEVICE_NAME: ${DEVICE_NAME:-V-ZUG Display Clock}
     restart: unless-stopped
     ports:
       - ${HOST_PORT:-9999}:${PORT:-3000}

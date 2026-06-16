@@ -5,11 +5,11 @@
 .env
 .env.*
 !.env.example
-node_modules
 coverage
 dist
 out
 build
 *.log
 *.tgz
-*.tsbuildinfo
+*.test
+/vzug-ha

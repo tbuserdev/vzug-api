@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 	_ "time/tzdata"
@@ -30,6 +31,7 @@ type app struct {
 	store  *state.Store
 	mqtt   *mqttbridge.Bridge
 	logger *slog.Logger
+	mu     sync.Mutex
 }
 
 func main() {
@@ -106,6 +108,9 @@ func main() {
 }
 
 func (a *app) SetDisplayClock(ctx context.Context, visible bool, action string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	if err := a.device.SetDisplayClock(ctx, visible); err != nil {
 		a.store.SetError(action, err)
 		a.publishState()

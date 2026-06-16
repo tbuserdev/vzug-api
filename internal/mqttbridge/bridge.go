@@ -21,12 +21,18 @@ type StateReader interface {
 
 type CommandHandler func(ctx context.Context, visible bool, action string) error
 
+type command struct {
+	visible bool
+}
+
 type Bridge struct {
-	cfg     config.MQTTConfig
-	state   StateReader
-	handler CommandHandler
-	client  mqtt.Client
-	logger  *slog.Logger
+	cfg      config.MQTTConfig
+	state    StateReader
+	handler  CommandHandler
+	client   mqtt.Client
+	logger   *slog.Logger
+	ctx      context.Context
+	commands chan command
 }
 
 func New(cfg config.MQTTConfig, store StateReader, handler CommandHandler, logger *slog.Logger) *Bridge {
@@ -39,6 +45,10 @@ func New(cfg config.MQTTConfig, store StateReader, handler CommandHandler, logge
 }
 
 func (b *Bridge) Start(ctx context.Context) error {
+	b.ctx = ctx
+	b.commands = make(chan command, 32)
+	go b.runCommands()
+
 	opts := mqtt.NewClientOptions().
 		AddBroker(b.cfg.Broker).
 		SetClientID(b.cfg.ClientID).
@@ -47,7 +57,7 @@ func (b *Bridge) Start(ctx context.Context) error {
 		SetAutoReconnect(true).
 		SetConnectRetry(true).
 		SetCleanSession(true).
-		SetOrderMatters(false).
+		SetOrderMatters(true).
 		SetWill(b.availabilityTopic(), "offline", 1, true)
 
 	opts.OnConnect = func(client mqtt.Client) {
@@ -150,13 +160,30 @@ func (b *Bridge) handleCommand(_ mqtt.Client, message mqtt.Message) {
 		b.logger.Warn("ignoring invalid MQTT command", "topic", message.Topic(), "payload", string(message.Payload()))
 		return
 	}
-	go func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-		if err := b.handler(ctx, visible, "mqtt_command"); err != nil {
-			b.logger.Error("failed to apply MQTT command", "visible", visible, "error", err)
+	select {
+	case b.commands <- command{visible: visible}:
+	case <-b.ctx.Done():
+		b.logger.Warn("dropping MQTT command during shutdown", "visible", visible)
+	}
+}
+
+func (b *Bridge) runCommands() {
+	for {
+		select {
+		case <-b.ctx.Done():
+			return
+		case command := <-b.commands:
+			b.applyCommand(command)
 		}
-	}()
+	}
+}
+
+func (b *Bridge) applyCommand(command command) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	if err := b.handler(ctx, command.visible, "mqtt_command"); err != nil {
+		b.logger.Error("failed to apply MQTT command", "visible", command.visible, "error", err)
+	}
 }
 
 func (b *Bridge) handleHABirth(_ mqtt.Client, message mqtt.Message) {

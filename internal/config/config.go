@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 const Version = "0.1.0"
@@ -37,13 +39,38 @@ type MQTTConfig struct {
 }
 
 func Load() (Config, error) {
+	if err := loadDotEnv(); err != nil {
+		return Config{}, err
+	}
+
+	port, err := getenvInt("PORT", 3000)
+	if err != nil {
+		return Config{}, err
+	}
+	allowInsecureTLS, err := getenvBool("ALLOW_INSECURE_TLS", false)
+	if err != nil {
+		return Config{}, err
+	}
+	httpTimeout, err := getenvDuration("HTTP_TIMEOUT", 10*time.Second)
+	if err != nil {
+		return Config{}, err
+	}
+	retryCount, err := getenvInt("RETRY_COUNT", 3)
+	if err != nil {
+		return Config{}, err
+	}
+	retryDelay, err := getenvDuration("RETRY_DELAY", 5*time.Second)
+	if err != nil {
+		return Config{}, err
+	}
+
 	cfg := Config{
 		BaseURL:          strings.TrimRight(getenv("BASE_URL", "http://device.local"), "/"),
-		Port:             getenvInt("PORT", 3000),
-		AllowInsecureTLS: getenvBool("ALLOW_INSECURE_TLS", false),
-		HTTPTimeout:      getenvDuration("HTTP_TIMEOUT", 10*time.Second),
-		RetryCount:       getenvInt("RETRY_COUNT", 3),
-		RetryDelay:       getenvDuration("RETRY_DELAY", 5*time.Second),
+		Port:             port,
+		AllowInsecureTLS: allowInsecureTLS,
+		HTTPTimeout:      httpTimeout,
+		RetryCount:       retryCount,
+		RetryDelay:       retryDelay,
 		Timezone:         getenv("TIMEZONE", "Europe/Zurich"),
 		ShowSchedule:     getenv("SHOW_SCHEDULE", "0 22 * * *"),
 		HideSchedule:     getenv("HIDE_SCHEDULE", "0 6 * * *"),
@@ -110,6 +137,16 @@ func (c Config) MQTTEnabled() bool {
 	return c.MQTT.Broker != ""
 }
 
+func loadDotEnv() error {
+	if err := godotenv.Load(); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return fmt.Errorf("load .env: %w", err)
+	}
+	return nil
+}
+
 func getenv(key, fallback string) string {
 	if v, ok := os.LookupEnv(key); ok && strings.TrimSpace(v) != "" {
 		return strings.TrimSpace(v)
@@ -117,35 +154,40 @@ func getenv(key, fallback string) string {
 	return fallback
 }
 
-func getenvInt(key string, fallback int) int {
+func getenvInt(key string, fallback int) (int, error) {
 	if v, ok := os.LookupEnv(key); ok && strings.TrimSpace(v) != "" {
-		if parsed, err := strconv.Atoi(strings.TrimSpace(v)); err == nil {
-			return parsed
+		parsed, err := strconv.Atoi(strings.TrimSpace(v))
+		if err != nil {
+			return 0, fmt.Errorf("%s must be an integer, got %q", key, v)
 		}
+		return parsed, nil
 	}
-	return fallback
+	return fallback, nil
 }
 
-func getenvBool(key string, fallback bool) bool {
+func getenvBool(key string, fallback bool) (bool, error) {
 	if v, ok := os.LookupEnv(key); ok && strings.TrimSpace(v) != "" {
-		if parsed, err := strconv.ParseBool(strings.TrimSpace(v)); err == nil {
-			return parsed
+		parsed, err := strconv.ParseBool(strings.TrimSpace(v))
+		if err != nil {
+			return false, fmt.Errorf("%s must be a boolean, got %q", key, v)
 		}
+		return parsed, nil
 	}
-	return fallback
+	return fallback, nil
 }
 
-func getenvDuration(key string, fallback time.Duration) time.Duration {
+func getenvDuration(key string, fallback time.Duration) (time.Duration, error) {
 	if v, ok := os.LookupEnv(key); ok && strings.TrimSpace(v) != "" {
 		parsed, err := time.ParseDuration(strings.TrimSpace(v))
 		if err == nil {
-			return parsed
+			return parsed, nil
 		}
 		if seconds, err := strconv.Atoi(strings.TrimSpace(v)); err == nil {
-			return time.Duration(seconds) * time.Second
+			return time.Duration(seconds) * time.Second, nil
 		}
+		return 0, fmt.Errorf("%s must be a duration such as 10s or integer seconds, got %q", key, v)
 	}
-	return fallback
+	return fallback, nil
 }
 
 func trimTopic(topic string) string {

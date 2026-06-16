@@ -1,12 +1,21 @@
-FROM oven/bun:1.3.5-alpine
+# syntax=docker/dockerfile:1.7
 
-WORKDIR /app
-ENV NODE_ENV=production
+FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS build
+WORKDIR /src
 
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile --production
+COPY go.mod go.sum ./
+RUN go mod download
 
 COPY . .
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build \
+    -trimpath \
+    -ldflags="-s -w" \
+    -o /out/vzug-ha ./cmd/vzug-ha
 
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /out/vzug-ha /vzug-ha
 EXPOSE 3000
-CMD ["bun", "start"]
+USER nonroot:nonroot
+ENTRYPOINT ["/vzug-ha"]
